@@ -6,15 +6,13 @@ use Dotenv\Dotenv;
 try {
     // Charger le fichier .env
     // / Vérifier si la classe existe
-    if (!class_exists('Dotenv\Dotenv')) {
-        die("❌ ERREUR : La classe Dotenv\Dotenv n'est pas trouvée. Assurez-vous que phpdotenv est bien installé avec Composer.");
-    }
+    
     
     // Charger .env
     $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
     $dotenv->load();
     
-    echo "✅ Dotenv chargé avec succès !";
+
     
 
     // Récupérer les variables d'environnement
