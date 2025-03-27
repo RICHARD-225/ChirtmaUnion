@@ -1,5 +1,14 @@
 <?php
+session_start();
 require 'includes/config.php';
+require 'vendor/autoload.php'; // Assurez-vous d'avoir installé Firebase PHP SDK via Composer
+
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Auth;
+
+// Initialiser Firebase
+$factory = (new Factory)->withServiceAccount($_ENV['FIREBASE_CREDENTIALS']); // Remplacez par le chemin vers votre fichier de clés
+$auth = $factory->createAuth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Récupération des données du formulaire
@@ -66,22 +75,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Insertion dans la table `users`
-    $sql_user = "INSERT INTO users (email, pwd, prenom, nom, sexe, ddn, ville, photo_profil, descri, eglise) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt_user = $pdo->prepare($sql_user);
-    $stmt_user->execute([$email, $mot_de_passe_hash, $prenom, $nom, $sexe, $ddn, $ville, $photo_profil, $description, $denomination]);
+    try {
+        // Créer l'utilisateur dans Firebase
+        $user = $auth->createUserWithEmailAndPassword($email, $mot_de_passe);
 
-    // Récupérer l'ID de l'utilisateur inséré
-    $utilisateur_id = $pdo->lastInsertId();
+        // Insérer l'utilisateur dans la base de données MySQL
+        $sql_user = "INSERT INTO users (email, pwd, prenom, nom, sexe, ddn, ville, photo_profil, descri, eglise) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt_user = $pdo->prepare($sql_user);
+        $stmt_user->execute([$email, $mot_de_passe_hash, $prenom, $nom, $sexe, $ddn, $ville, $photo_profil, $description, $denomination]);
 
-    // Insertion dans la table `profils`
-    $sql_profil = "INSERT INTO profils (utilisateur_id, denomination, niveau_pratique) VALUES (?, ?, ?)";
-    $stmt_profil = $pdo->prepare($sql_profil);
-    $stmt_profil->execute([$utilisateur_id, $denomination, $frequence]);
+        // Récupérer l'ID de l'utilisateur inséré
+        $utilisateur_id = $pdo->lastInsertId();
 
-    echo "Inscription réussie !";
-    header("Location: connexion.php");
-    exit;
+        // Insertion dans la table `profils`
+        $sql_profil = "INSERT INTO profils (utilisateur_id, denomination, niveau_pratique) VALUES (?, ?, ?)";
+        $stmt_profil = $pdo->prepare($sql_profil);
+        $stmt_profil->execute([$utilisateur_id, $denomination, $frequence]);
+
+        // Inclure le fichier d'envoi d'e-mail
+        require 'includes/sendMail.php';
+        envoyerEmailConfirmation($email); // Appeler la fonction pour envoyer l'e-mail
+
+        echo "Inscription réussie ! Un e-mail de confirmation a été envoyé.";
+        header("Location: connexion.php");
+        exit;
+    } catch (Exception $e) {
+        echo "Erreur lors de la création de l'utilisateur : " . $e->getMessage();
+    }
 }
 ?>
 <!DOCTYPE html>
