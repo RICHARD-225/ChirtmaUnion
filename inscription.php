@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validation des mots de passe
     if ($mot_de_passe !== $confirm_mdp) {
-        echo "Les mots de passe ne correspondent pas.";
+        echo "Le mots de passe ne correspondent pas.";
         exit;
     }
 
