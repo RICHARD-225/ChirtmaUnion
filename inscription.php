@@ -104,6 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -183,9 +186,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <!-- Même Navbar que index.html -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top"> -->
     <!-- ... copier la navbar de index.html ... -->
-    </nav>
+    <!-- </nav> -->
 
     <div class="container mt-5 pt-5">
         <div class="row justify-content-center">

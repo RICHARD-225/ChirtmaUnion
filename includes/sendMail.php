@@ -16,7 +16,7 @@ function envoyerEmailConfirmation($email) {
         $mail->Port = $_ENV['SMTP_PORT']; // Utiliser la variable d'environnement
 
         // Destinataires
-        $mail->setFrom($_ENV['SMTP_USER'], 'Nom de votre application');
+        $mail->setFrom($_ENV['SMTP_USER'], 'ChristianUnion');
         $mail->addAddress($email);
 
         // Contenu de l'e-mail
